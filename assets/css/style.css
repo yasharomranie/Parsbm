@@ -585,6 +585,16 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
   color: #fff;
   min-height: min(760px, 92vh);
   display: flex;
+  flex-direction: column;
+}
+/* .hero has two direct content containers: the slides wrapper and the
+   dots/arrows control bar. Without an explicit column direction these
+   default to a flex ROW and get squeezed side-by-side (worst on narrow
+   viewports) instead of stacking — the slides wrapper grows to fill the
+   remaining height so the control bar always settles at the bottom. */
+.hero > .container:not(.hero__controls) {
+  flex: 1;
+  display: flex;
   align-items: center;
 }
 .hero__grid {
@@ -610,11 +620,14 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(30px); } }
 
 .hero__inner {
+  /* Note: .hero already sits inside .page-shell (padding-top: --header-h),
+     so no extra header offset is added here — only normal section spacing. */
   position: relative;
   z-index: 2;
+  width: 100%;
   display: grid;
   gap: var(--space-xl);
-  padding-block: calc(var(--header-h) + var(--space-xl)) var(--space-2xl);
+  padding-block: var(--space-xl) var(--space-lg);
   align-items: center;
 }
 @media (min-width: 960px) {
@@ -693,12 +706,15 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
 @keyframes ringSpin { to { transform: rotate(360deg); } }
 
 .hero__frame {
+  /* Fixed light panel (not theme-swapped — the hero band around it is
+     always dark navy, see .hero) so the catalog photos' own white backdrop
+     blends seamlessly into it with no blend-mode trick needed: the photo
+     stays fully bright and legible, the "special" factor comes from the
+     angled cut, glow and HUD framing around it, not from tinting the photo. */
   position: absolute;
   inset: 0;
   clip-path: polygon(9% 0, 100% 0, 100% 78%, 91% 100%, 0 100%, 0 22%);
-  background:
-    linear-gradient(155deg, rgba(255,255,255,0.14), rgba(255,255,255,0.02)),
-    linear-gradient(155deg, var(--brand-navy-100), var(--brand-navy-700));
+  background: linear-gradient(155deg, #ffffff, #e9ecf8);
   box-shadow: var(--shadow-glow);
   display: flex;
   align-items: center;
@@ -712,20 +728,15 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
   position: absolute;
   inset-block: -20%;
   inset-inline-start: -10%;
-  width: 40%;
-  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.14), transparent);
+  width: 34%;
+  background: linear-gradient(100deg, transparent, rgba(43,54,145,0.1), transparent);
   animation: heroScan 7s ease-in-out infinite;
 }
 @keyframes heroScan { 0% { transform: translateX(-40%); } 55%, 100% { transform: translateX(340%); } }
 .hero__photo {
-  /* The hero panel is a fixed brand-navy surface in both themes (see .hero
-     above), so multiply blend reads consistently regardless of site theme:
-     the photo's white catalog background melts into the navy, leaving only
-     the machine visible, tinted by the surface beneath it. */
-  width: 86%; height: 86%;
+  width: 84%; height: 84%;
   object-fit: contain;
-  mix-blend-mode: multiply;
-  filter: contrast(1.08) saturate(1.05);
+  filter: drop-shadow(0 14px 22px rgba(12, 16, 48, 0.22));
   transform: rotate(calc(var(--tilt, -1.6deg) * -1));
 }
 
