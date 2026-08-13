@@ -1183,15 +1183,21 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
   transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base);
 }
 .machine-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
-.machine-card__icon {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  background: linear-gradient(155deg, var(--brand-navy-500), var(--brand-navy-700));
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
+/* Photo header — same 16/11 ratio as .product-card__art on the homepage,
+   for a consistent proportion across every card style on the site. */
+.machine-card__art {
+  aspect-ratio: 16/11;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-alt);
   margin-bottom: var(--space-sm);
+  overflow: hidden;
 }
-.machine-card__icon svg { width: 26px; height: 26px; }
+.machine-card__art img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.machine-card:hover .machine-card__art img { transform: scale(1.06); }
 .machine-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 .machine-card__specs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.6rem; }
 .spec-chip {
