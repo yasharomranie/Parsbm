@@ -224,6 +224,39 @@
   );
   backToTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+  /* ------------------------------------ Pagination (category.html grid) ---------- */
+  const paginationEls = document.querySelectorAll("[data-pagination]");
+  paginationEls.forEach((pagination) => {
+    const gridSel = pagination.getAttribute("data-pagination");
+    const grid = document.querySelector(gridSel);
+    if (!grid) return;
+    const pageButtons = Array.from(pagination.querySelectorAll("[data-page]"));
+    const prevBtn = pagination.querySelector("[data-page-prev]");
+    const nextBtn = pagination.querySelector("[data-page-next]");
+    const totalPages = pageButtons.length;
+
+    function showPage(page) {
+      grid.querySelectorAll("[data-item-page]").forEach((item) => {
+        item.style.display = Number(item.getAttribute("data-item-page")) === page ? "" : "none";
+      });
+      pageButtons.forEach((b) => b.classList.toggle("is-active", Number(b.getAttribute("data-page")) === page));
+      if (prevBtn) prevBtn.disabled = page <= 1;
+      if (nextBtn) nextBtn.disabled = page >= totalPages;
+      pagination.dataset.current = String(page);
+    }
+
+    pageButtons.forEach((b) => {
+      b.addEventListener("click", () => {
+        showPage(Number(b.getAttribute("data-page")));
+        grid.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      });
+    });
+    prevBtn?.addEventListener("click", () => showPage(Math.max(1, Number(pagination.dataset.current || 1) - 1)));
+    nextBtn?.addEventListener("click", () => showPage(Math.min(totalPages, Number(pagination.dataset.current || 1) + 1)));
+
+    showPage(1);
+  });
+
   /* ------------------------------------ Footer year (Persian calendar) ----------- */
   const yearEl = document.querySelector("[data-year]");
   if (yearEl) {
