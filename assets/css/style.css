@@ -1189,7 +1189,10 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
    nothing sliced off the top/sides of the machine — matted on a light
    panel so any letterboxing reads as a deliberate frame, not a crop bug. */
 .machine-card__art {
-  aspect-ratio: 16/11;
+  /* Wide "کشیده" banner shape (matches the client's existing site's
+     category-archive cards) instead of the squarish 16/11 product-card
+     ratio — object-fit: contain below still guarantees nothing is cropped. */
+  aspect-ratio: 2 / 1;
   border-radius: var(--radius-md);
   background: linear-gradient(155deg, #ffffff, #e9ecf8);
   margin-bottom: var(--space-sm);
