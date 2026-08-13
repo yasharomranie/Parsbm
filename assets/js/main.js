@@ -90,6 +90,9 @@
     const dots = slides.map((_, i) => {
       const dot = document.createElement("button");
       dot.type = "button";
+      // Plain .hero__dots renders these as small bars (font-size:0 in CSS);
+      // .hero__tabs (category hero) shows the number as a visible pill label.
+      dot.textContent = (i + 1).toLocaleString("fa-IR");
       dot.setAttribute("aria-label", `اسلاید ${i + 1}`);
       dot.addEventListener("click", () => goTo(i, true));
       dotsWrap?.appendChild(dot);

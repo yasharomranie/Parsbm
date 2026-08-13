@@ -175,17 +175,21 @@
     </nav>
   </div>
 
-  <!-- ============================= CATEGORY HERO SLIDER ============================= -->
-  <section class="hero hero--compact" data-hero-slider aria-roledescription="اسلایدر" aria-label="محصولات قابل تولید با دستگاه‌های اکستروژن بادی">
+  <!-- ============================= CATEGORY HERO SLIDER =============================
+       Deliberately a different visual system from the homepage hero: a
+       scattered product "mosaic" instead of one framed photo, a giant
+       outline index numeral, and a scrolling icon ticker instead of a ring. -->
+  <section class="hero hero--compact hero--catalog" data-hero-slider aria-roledescription="اسلایدر" aria-label="محصولات قابل تولید با دستگاه‌های اکستروژن بادی">
     <div class="hero__grid" aria-hidden="true"></div>
-    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="hero__ribbon" aria-hidden="true"></div>
 
     <div class="container">
       <div class="hero__slides">
 
         <div class="hero__slide is-active">
-          <div class="hero__inner">
+          <div class="hero__inner hero__inner--catalog">
             <div>
+              <span class="hero__index" aria-hidden="true">01</span>
               <span class="hero__tag"><svg width="14" height="14"><use href="#i-jerrycan"/></svg> خانواده محصولات اکستروژن بادی</span>
               <h1 class="hero__title">از <em>گالن صنعتی</em> تا مخازن بزرگ</h1>
               <p class="hero__desc">دستگاه‌های اکستروژن بادی پارس، طیف کاملی از گالن، بشکه و مخازن پلاستیکی را با دیواره یکنواخت و استحکام بالا تولید می‌کنند.</p>
@@ -195,27 +199,21 @@
               </div>
             </div>
             <div class="hero__visual">
-              <div class="hero__frame-wrap">
-                <div class="hero__ring" aria-hidden="true"></div>
-                <div class="hero__frame">
-                  <span class="hero__corner hero__corner--tl" aria-hidden="true"></span>
-                  <span class="hero__corner hero__corner--br" aria-hidden="true"></span>
-                  <div class="cluster">
-                    <span class="cluster__main"><svg width="86" height="86"><use href="#i-jerrycan"/></svg></span>
-                    <span class="cluster__satellite cluster__satellite--a"><svg width="34" height="34"><use href="#i-drum"/></svg></span>
-                    <span class="cluster__satellite cluster__satellite--b"><svg width="34" height="34"><use href="#i-tank"/></svg></span>
-                  </div>
-                </div>
-                <span class="hero__chip hero__chip--a"><svg width="18" height="18"><use href="#i-check"/></svg> گارانتی ۲۴ ماهه</span>
-                <span class="hero__chip hero__chip--b"><svg width="18" height="18"><use href="#i-check"/></svg> ساخت داخلی</span>
+              <div class="mosaic">
+                <div class="mosaic__tile mosaic__tile--1"><div class="mosaic__tile__inner"><svg><use href="#i-jerrycan"/></svg>گالن صنعتی</div></div>
+                <div class="mosaic__tile mosaic__tile--2"><div class="mosaic__tile__inner"><svg><use href="#i-drum"/></svg>بشکه</div></div>
+                <div class="mosaic__tile mosaic__tile--3"><div class="mosaic__tile__inner"><svg><use href="#i-tank"/></svg>مخزن</div></div>
+                <div class="mosaic__tile mosaic__tile--4"><div class="mosaic__tile__inner"><svg><use href="#i-bottle"/></svg>بطری صنعتی</div></div>
+                <div class="mosaic__tile mosaic__tile--5"><div class="mosaic__tile__inner"><svg><use href="#i-press"/></svg>ساخته‌شده با پارس</div></div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="hero__slide">
-          <div class="hero__inner">
+          <div class="hero__inner hero__inner--catalog">
             <div>
+              <span class="hero__index" aria-hidden="true">02</span>
               <span class="hero__tag"><svg width="14" height="14"><use href="#i-spray"/></svg> بطری‌های خانگی و شوینده</span>
               <h1 class="hero__title">بطری‌های <em>خانگی و شوینده</em> با کیفیت صادراتی</h1>
               <p class="hero__desc">از بطری اسپری و شوینده تا ظروف آرایشی و بهداشتی؛ با دقت ابعادی بالا و سطحی صاف و براق برای چاپ و برچسب‌زنی.</p>
@@ -225,27 +223,21 @@
               </div>
             </div>
             <div class="hero__visual">
-              <div class="hero__frame-wrap">
-                <div class="hero__ring" aria-hidden="true"></div>
-                <div class="hero__frame">
-                  <span class="hero__corner hero__corner--tl" aria-hidden="true"></span>
-                  <span class="hero__corner hero__corner--br" aria-hidden="true"></span>
-                  <div class="cluster">
-                    <span class="cluster__main"><svg width="86" height="86"><use href="#i-spray"/></svg></span>
-                    <span class="cluster__satellite cluster__satellite--a"><svg width="34" height="34"><use href="#i-bottle"/></svg></span>
-                    <span class="cluster__satellite cluster__satellite--b"><svg width="34" height="34"><use href="#i-jar"/></svg></span>
-                  </div>
-                </div>
-                <span class="hero__chip hero__chip--a"><svg width="18" height="18"><use href="#i-check"/></svg> سطح براق</span>
-                <span class="hero__chip hero__chip--b"><svg width="18" height="18"><use href="#i-check"/></svg> آماده چاپ</span>
+              <div class="mosaic">
+                <div class="mosaic__tile mosaic__tile--1"><div class="mosaic__tile__inner"><svg><use href="#i-spray"/></svg>اسپری</div></div>
+                <div class="mosaic__tile mosaic__tile--2"><div class="mosaic__tile__inner"><svg><use href="#i-bottle"/></svg>بطری شوینده</div></div>
+                <div class="mosaic__tile mosaic__tile--3"><div class="mosaic__tile__inner"><svg><use href="#i-jar"/></svg>ظرف آرایشی</div></div>
+                <div class="mosaic__tile mosaic__tile--4"><div class="mosaic__tile__inner"><svg><use href="#i-cap-bottle"/></svg>ظرف بهداشتی</div></div>
+                <div class="mosaic__tile mosaic__tile--5"><div class="mosaic__tile__inner"><svg><use href="#i-press"/></svg>ساخته‌شده با پارس</div></div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="hero__slide">
-          <div class="hero__inner">
+          <div class="hero__inner hero__inner--catalog">
             <div>
+              <span class="hero__index" aria-hidden="true">03</span>
               <span class="hero__tag"><svg width="14" height="14"><use href="#i-duct"/></svg> قطعات صنعتی و خودرویی</span>
               <h1 class="hero__title">قطعات <em>هالو صنعتی</em> و خودرو با دقت بالا</h1>
               <p class="hero__desc">تولید داکت هوا، مجاری خودرویی و قطعات هالو صنعتی با ضخامت دیواره کنترل‌شده و مقاومت مکانیکی بالا.</p>
@@ -255,19 +247,12 @@
               </div>
             </div>
             <div class="hero__visual">
-              <div class="hero__frame-wrap">
-                <div class="hero__ring" aria-hidden="true"></div>
-                <div class="hero__frame">
-                  <span class="hero__corner hero__corner--tl" aria-hidden="true"></span>
-                  <span class="hero__corner hero__corner--br" aria-hidden="true"></span>
-                  <div class="cluster">
-                    <span class="cluster__main"><svg width="86" height="86"><use href="#i-duct"/></svg></span>
-                    <span class="cluster__satellite cluster__satellite--a"><svg width="34" height="34"><use href="#i-cog"/></svg></span>
-                    <span class="cluster__satellite cluster__satellite--b"><svg width="34" height="34"><use href="#i-box"/></svg></span>
-                  </div>
-                </div>
-                <span class="hero__chip hero__chip--a"><svg width="18" height="18"><use href="#i-check"/></svg> ضخامت کنترل‌شده</span>
-                <span class="hero__chip hero__chip--b"><svg width="18" height="18"><use href="#i-check"/></svg> مقاومت بالا</span>
+              <div class="mosaic">
+                <div class="mosaic__tile mosaic__tile--1"><div class="mosaic__tile__inner"><svg><use href="#i-duct"/></svg>داکت هوا</div></div>
+                <div class="mosaic__tile mosaic__tile--2"><div class="mosaic__tile__inner"><svg><use href="#i-cog"/></svg>قطعه فنی</div></div>
+                <div class="mosaic__tile mosaic__tile--3"><div class="mosaic__tile__inner"><svg><use href="#i-box"/></svg>مخزن خودرو</div></div>
+                <div class="mosaic__tile mosaic__tile--4"><div class="mosaic__tile__inner"><svg><use href="#i-tank"/></svg>مخزن سوخت</div></div>
+                <div class="mosaic__tile mosaic__tile--5"><div class="mosaic__tile__inner"><svg><use href="#i-press"/></svg>ساخته‌شده با پارس</div></div>
               </div>
             </div>
           </div>
@@ -276,8 +261,30 @@
       </div>
     </div>
 
+    <div class="hero__ticker" aria-hidden="true">
+      <div class="hero__ticker__track">
+        <span class="hero__ticker__item"><svg><use href="#i-jerrycan"/></svg>گالن صنعتی</span>
+        <span class="hero__ticker__item"><svg><use href="#i-drum"/></svg>بشکه شیمیایی</span>
+        <span class="hero__ticker__item"><svg><use href="#i-tank"/></svg>مخزن بزرگ</span>
+        <span class="hero__ticker__item"><svg><use href="#i-spray"/></svg>بطری اسپری</span>
+        <span class="hero__ticker__item"><svg><use href="#i-jar"/></svg>ظرف آرایشی</span>
+        <span class="hero__ticker__item"><svg><use href="#i-bottle"/></svg>بطری شوینده</span>
+        <span class="hero__ticker__item"><svg><use href="#i-duct"/></svg>داکت هوا</span>
+        <span class="hero__ticker__item"><svg><use href="#i-box"/></svg>لوازم جانبی</span>
+        <!-- duplicated once for a seamless -50% loop -->
+        <span class="hero__ticker__item"><svg><use href="#i-jerrycan"/></svg>گالن صنعتی</span>
+        <span class="hero__ticker__item"><svg><use href="#i-drum"/></svg>بشکه شیمیایی</span>
+        <span class="hero__ticker__item"><svg><use href="#i-tank"/></svg>مخزن بزرگ</span>
+        <span class="hero__ticker__item"><svg><use href="#i-spray"/></svg>بطری اسپری</span>
+        <span class="hero__ticker__item"><svg><use href="#i-jar"/></svg>ظرف آرایشی</span>
+        <span class="hero__ticker__item"><svg><use href="#i-bottle"/></svg>بطری شوینده</span>
+        <span class="hero__ticker__item"><svg><use href="#i-duct"/></svg>داکت هوا</span>
+        <span class="hero__ticker__item"><svg><use href="#i-box"/></svg>لوازم جانبی</span>
+      </div>
+    </div>
+
     <div class="container hero__controls">
-      <div class="hero__dots" data-hero-dots role="tablist" aria-label="انتخاب اسلاید"></div>
+      <div class="hero__tabs" data-hero-dots role="tablist" aria-label="انتخاب اسلاید"></div>
       <div class="hero__arrows">
         <button type="button" data-hero-prev aria-label="اسلاید قبلی" style="transform:scaleX(-1)"><svg width="18" height="18"><use href="#i-arrow-fwd"/></svg></button>
         <button type="button" data-hero-next aria-label="اسلاید بعدی"><svg width="18" height="18"><use href="#i-arrow-fwd"/></svg></button>
