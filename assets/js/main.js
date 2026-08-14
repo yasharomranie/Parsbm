@@ -227,6 +227,58 @@
   );
   backToTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+  /* ------------------------------------ Reading progress (post.html) ------------- */
+  const progressBar = document.querySelector("[data-reading-progress]");
+  if (progressBar) {
+    const article = document.querySelector(".post-body");
+    const updateProgress = () => {
+      if (!article) return;
+      const rect = article.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const scrolled = -rect.top;
+      const pct = total > 0 ? Math.min(100, Math.max(0, (scrolled / total) * 100)) : 0;
+      progressBar.style.width = pct + "%";
+    };
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  }
+
+  /* ------------------------------------ FAQ accordion (post.html) ---------------- */
+  document.querySelectorAll(".faq-item__q").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const item = btn.closest(".faq-item");
+      const wasOpen = item.classList.contains("is-open");
+      item.parentElement.querySelectorAll(".faq-item.is-open").forEach((el) => {
+        el.classList.remove("is-open");
+        el.querySelector(".faq-item__q").setAttribute("aria-expanded", "false");
+      });
+      if (!wasOpen) {
+        item.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  /* ------------------------------------ TOC active-section tracking (post.html) -- */
+  const tocLinks = document.querySelectorAll("[data-toc] a");
+  if ("IntersectionObserver" in window && tocLinks.length) {
+    const headings = Array.from(tocLinks)
+      .map((a) => document.querySelector(a.getAttribute("href")))
+      .filter(Boolean);
+    const tocIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.getAttribute("id");
+          tocLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+    headings.forEach((h) => tocIo.observe(h));
+  }
+
   /* ------------------------------------ Pagination (category.html grid) ---------- */
   const paginationEls = document.querySelectorAll("[data-pagination]");
   paginationEls.forEach((pagination) => {
