@@ -1200,8 +1200,10 @@ h1, h2, h3, h4 { font-weight: 700; line-height: 1.32; }
 }
 :root[data-theme="dark"] .machine-card__art { background: linear-gradient(155deg, #e9ecf8, #ffffff); }
 .machine-card__art img {
+  /* Fill the frame edge-to-edge (no matte) — the source crops are tight
+     enough around the machine that cover only trims a small margin. */
   width: 100%; height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   transition: transform var(--dur-slow) var(--ease-out);
 }
 .machine-card:hover .machine-card__art img { transform: scale(1.06); }
