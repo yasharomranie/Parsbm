@@ -227,6 +227,100 @@
   );
   backToTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
+  /* ------------------------------------ Search (search.html) --------------------- */
+  const searchPage = document.querySelector("[data-search-page]");
+  if (searchPage && Array.isArray(window.PARS_SEARCH_INDEX)) {
+    const index = window.PARS_SEARCH_INDEX;
+    const input = searchPage.querySelector("[data-search-input]");
+    const resultsEl = searchPage.querySelector("[data-search-results]");
+    const countEl = searchPage.querySelector("[data-search-count]");
+    const tabs = Array.from(searchPage.querySelectorAll("[data-search-filter]"));
+    const chips = searchPage.querySelectorAll("[data-search-chip]");
+    let activeType = "all";
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function highlight(text, query) {
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const escQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return safe.replace(new RegExp(`(${escQuery})`, "gi"), "<mark>$1</mark>");
+    }
+
+    function matches(item, query) {
+      if (!query) return true;
+      const haystack = `${item.title} ${item.excerpt} ${item.keywords || ""}`.toLowerCase();
+      return haystack.includes(query.toLowerCase());
+    }
+
+    function render() {
+      const query = (input.value || "").trim();
+      const filtered = index.filter((item) => (activeType === "all" || item.type === activeType) && matches(item, query));
+
+      countEl.innerHTML = query
+        ? `<strong>${filtered.length.toLocaleString("fa-IR")}</strong> نتیجه برای «${escapeHtml(query)}»`
+        : `<strong>${filtered.length.toLocaleString("fa-IR")}</strong> مورد در دسترس`;
+
+      if (!filtered.length) {
+        resultsEl.innerHTML = "";
+        resultsEl.hidden = true;
+        searchPage.querySelector("[data-search-empty]").hidden = false;
+      } else {
+        searchPage.querySelector("[data-search-empty]").hidden = true;
+        resultsEl.hidden = false;
+        resultsEl.innerHTML = filtered
+          .map(
+            (item) => `
+          <article class="search-result">
+            <span class="search-result__badge"><svg width="12" height="12"><use href="#${item.icon}"/></svg>${item.typeLabel}</span>
+            <h3><a href="${item.url}">${highlight(item.title, query)}</a></h3>
+            <p class="search-result__url">${item.urlLabel}</p>
+            <p class="search-result__excerpt">${highlight(item.excerpt, query)}</p>
+          </article>`
+          )
+          .join("");
+      }
+
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set("q", query);
+      else url.searchParams.delete("q");
+      window.history.replaceState({}, "", url);
+    }
+
+    let debounceTimer;
+    input?.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(render, 200);
+    });
+    searchPage.querySelectorAll("[data-search-form]").forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        render();
+      });
+    });
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("is-active"));
+        tab.classList.add("is-active");
+        activeType = tab.getAttribute("data-search-filter");
+        render();
+      });
+    });
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        input.value = chip.getAttribute("data-search-chip");
+        input.focus();
+        render();
+      });
+    });
+
+    const initialQuery = new URLSearchParams(window.location.search).get("q");
+    if (initialQuery && input) input.value = initialQuery;
+    render();
+  }
+
   /* ------------------------------------ Reading progress (post.html) ------------- */
   const progressBar = document.querySelector("[data-reading-progress]");
   if (progressBar) {
