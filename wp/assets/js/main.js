@@ -1,0 +1,506 @@
+/* Pars Blow Molding Technology — site interactions */
+(() => {
+  "use strict";
+
+  /* ---------------------------- Theme (dark/light) --------------------------- */
+  const THEME_KEY = "pars-bm-theme";
+  const root = document.documentElement;
+
+  function applyTheme(theme) {
+    if (theme === "dark" || theme === "light") {
+      root.setAttribute("data-theme", theme);
+    } else {
+      root.removeAttribute("data-theme");
+    }
+    document
+      .querySelectorAll('meta[name="theme-color"]')
+      .forEach((m) => m.setAttribute("content", getComputedStyle(root).getPropertyValue("--color-bg").trim() || "#f7f8fc"));
+  }
+
+  const storedTheme = localStorage.getItem(THEME_KEY);
+  applyTheme(storedTheme);
+
+  function currentIsDark() {
+    const attr = root.getAttribute("data-theme");
+    if (attr === "dark") return true;
+    if (attr === "light") return false;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  }
+
+  document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = currentIsDark() ? "light" : "dark";
+      applyTheme(next);
+      localStorage.setItem(THEME_KEY, next);
+    });
+  });
+
+  /* --------------------------------- Header state ------------------------------ */
+  const header = document.querySelector(".site-header");
+  const onScrollHeader = () => {
+    if (!header) return;
+    header.classList.toggle("is-scrolled", window.scrollY > 12);
+  };
+  onScrollHeader();
+  window.addEventListener("scroll", onScrollHeader, { passive: true });
+
+  /* --------------------------------- Mobile drawer ------------------------------ */
+  const drawer = document.querySelector("[data-drawer]");
+  const drawerOpeners = document.querySelectorAll("[data-drawer-open]");
+  const drawerClosers = document.querySelectorAll("[data-drawer-close]");
+
+  function openDrawer() {
+    drawer?.classList.add("is-open");
+    document.body.style.overflow = "hidden";
+    drawerOpeners.forEach((b) => b.setAttribute("aria-expanded", "true"));
+  }
+  function closeDrawer() {
+    drawer?.classList.remove("is-open");
+    document.body.style.overflow = "";
+    drawerOpeners.forEach((b) => b.setAttribute("aria-expanded", "false"));
+  }
+  drawerOpeners.forEach((b) => b.addEventListener("click", openDrawer));
+  drawerClosers.forEach((b) => b.addEventListener("click", closeDrawer));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeDrawer();
+  });
+
+  /* Mobile accordion (product categories inside drawer) */
+  document.querySelectorAll(".mobile-accordion__trigger").forEach((trigger) => {
+    trigger.addEventListener("click", () => {
+      trigger.closest(".mobile-accordion")?.classList.toggle("is-open");
+      const expanded = trigger.getAttribute("aria-expanded") === "true";
+      trigger.setAttribute("aria-expanded", String(!expanded));
+    });
+  });
+
+  /* ------------------------------------ Hero slider ------------------------------ */
+  const heroSlider = document.querySelector("[data-hero-slider]");
+  if (heroSlider) {
+    const slides = Array.from(heroSlider.querySelectorAll(".hero__slide"));
+    const dotsWrap = heroSlider.querySelector("[data-hero-dots]");
+    const prevBtn = heroSlider.querySelector("[data-hero-prev]");
+    const nextBtn = heroSlider.querySelector("[data-hero-next]");
+    let active = slides.findIndex((s) => s.classList.contains("is-active"));
+    if (active < 0) active = 0;
+    let timer = null;
+    const AUTOPLAY_MS = 6500;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const dots = slides.map((_, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      // Plain .hero__dots renders these as small bars (font-size:0 in CSS);
+      // .hero__tabs (category hero) shows the number as a visible pill label.
+      dot.textContent = (i + 1).toLocaleString("fa-IR");
+      dot.setAttribute("aria-label", `اسلاید ${i + 1}`);
+      dot.addEventListener("click", () => goTo(i, true));
+      dotsWrap?.appendChild(dot);
+      return dot;
+    });
+
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle("is-active", i === active));
+      dots.forEach((d, i) => d.classList.toggle("is-active", i === active));
+    }
+
+    function goTo(index, userTriggered) {
+      active = (index + slides.length) % slides.length;
+      render();
+      if (userTriggered) restart();
+    }
+
+    function next() { goTo(active + 1); }
+    function prev() { goTo(active - 1); }
+
+    function restart() {
+      if (reduceMotion) return;
+      clearInterval(timer);
+      timer = setInterval(next, AUTOPLAY_MS);
+    }
+
+    prevBtn?.addEventListener("click", () => goTo(active - 1, true));
+    nextBtn?.addEventListener("click", () => goTo(active + 1, true));
+    heroSlider.addEventListener("mouseenter", () => clearInterval(timer));
+    heroSlider.addEventListener("mouseleave", restart);
+    heroSlider.addEventListener("focusin", () => clearInterval(timer));
+    heroSlider.addEventListener("focusout", restart);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) clearInterval(timer);
+      else restart();
+    });
+
+    render();
+    restart();
+  }
+
+  /* ------------------------------------ Sample filter ------------------------------ */
+  const filterTabs = document.querySelectorAll("[data-filter]");
+  const sampleCards = document.querySelectorAll("[data-sample-cat]");
+  filterTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      filterTabs.forEach((t) => t.classList.remove("is-active"));
+      tab.classList.add("is-active");
+      const value = tab.getAttribute("data-filter");
+      sampleCards.forEach((card) => {
+        const match = value === "all" || card.getAttribute("data-sample-cat") === value;
+        card.style.display = match ? "" : "none";
+      });
+    });
+  });
+
+  /* ------------------------------------ Scroll reveal ------------------------------ */
+  const revealEls = document.querySelectorAll("[data-reveal]");
+  if ("IntersectionObserver" in window && revealEls.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -60px 0px" }
+    );
+    revealEls.forEach((el, i) => {
+      el.style.setProperty("--i", i % 6);
+      io.observe(el);
+    });
+  } else {
+    revealEls.forEach((el) => el.classList.add("is-visible"));
+  }
+
+  /* ------------------------------------ Counters ------------------------------ */
+  const counters = document.querySelectorAll("[data-counter]");
+  if ("IntersectionObserver" in window && counters.length) {
+    const countIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target;
+          const target = parseFloat(el.getAttribute("data-counter"));
+          const suffix = el.getAttribute("data-counter-suffix") || "";
+          const duration = 1400;
+          const start = performance.now();
+          function tick(now) {
+            const p = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(target * eased).toLocaleString("fa-IR") + suffix;
+            if (p < 1) requestAnimationFrame(tick);
+          }
+          requestAnimationFrame(tick);
+          countIo.unobserve(el);
+        });
+      },
+      { threshold: 0.6 }
+    );
+    counters.forEach((el) => countIo.observe(el));
+  }
+
+  /* ------------------------------------ Active nav + bottom nav sync -------------- */
+  const sections = document.querySelectorAll("main section[id]");
+  const navLinks = document.querySelectorAll(".nav-link[href^='#'], .bottom-nav__item[href^='#']");
+  if ("IntersectionObserver" in window && sections.length) {
+    const navIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.getAttribute("id");
+          navLinks.forEach((link) => {
+            link.classList.toggle("is-active", link.getAttribute("href") === `#${id}`);
+          });
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    sections.forEach((s) => navIo.observe(s));
+  }
+
+  /* ------------------------------------ Back to top ------------------------------ */
+  const backToTop = document.querySelector("[data-back-to-top]");
+  window.addEventListener(
+    "scroll",
+    () => backToTop?.classList.toggle("is-visible", window.scrollY > 700),
+    { passive: true }
+  );
+  backToTop?.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  /* ------------------------------------ Search (search.html) --------------------- */
+  const searchPage = document.querySelector("[data-search-page]");
+  if (searchPage && Array.isArray(window.PARS_SEARCH_INDEX)) {
+    const index = window.PARS_SEARCH_INDEX;
+    const input = searchPage.querySelector("[data-search-input]");
+    const resultsEl = searchPage.querySelector("[data-search-results]");
+    const countEl = searchPage.querySelector("[data-search-count]");
+    const tabs = Array.from(searchPage.querySelectorAll("[data-search-filter]"));
+    const chips = searchPage.querySelectorAll("[data-search-chip]");
+    let activeType = "all";
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function highlight(text, query) {
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const escQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return safe.replace(new RegExp(`(${escQuery})`, "gi"), "<mark>$1</mark>");
+    }
+
+    function matches(item, query) {
+      if (!query) return true;
+      const haystack = `${item.title} ${item.excerpt} ${item.keywords || ""}`.toLowerCase();
+      return haystack.includes(query.toLowerCase());
+    }
+
+    function render() {
+      const query = (input.value || "").trim();
+      const filtered = index.filter((item) => (activeType === "all" || item.type === activeType) && matches(item, query));
+
+      countEl.innerHTML = query
+        ? `<strong>${filtered.length.toLocaleString("fa-IR")}</strong> نتیجه برای «${escapeHtml(query)}»`
+        : `<strong>${filtered.length.toLocaleString("fa-IR")}</strong> مورد در دسترس`;
+
+      if (!filtered.length) {
+        resultsEl.innerHTML = "";
+        resultsEl.hidden = true;
+        searchPage.querySelector("[data-search-empty]").hidden = false;
+      } else {
+        searchPage.querySelector("[data-search-empty]").hidden = true;
+        resultsEl.hidden = false;
+        resultsEl.innerHTML = filtered
+          .map(
+            (item) => `
+          <article class="search-result">
+            <span class="search-result__badge"><svg width="12" height="12"><use href="#${item.icon}"/></svg>${item.typeLabel}</span>
+            <h3><a href="${item.url}">${highlight(item.title, query)}</a></h3>
+            <p class="search-result__url">${item.urlLabel}</p>
+            <p class="search-result__excerpt">${highlight(item.excerpt, query)}</p>
+          </article>`
+          )
+          .join("");
+      }
+
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set("q", query);
+      else url.searchParams.delete("q");
+      window.history.replaceState({}, "", url);
+    }
+
+    let debounceTimer;
+    input?.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(render, 200);
+    });
+    searchPage.querySelectorAll("[data-search-form]").forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        render();
+      });
+    });
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("is-active"));
+        tab.classList.add("is-active");
+        activeType = tab.getAttribute("data-search-filter");
+        render();
+      });
+    });
+    chips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        input.value = chip.getAttribute("data-search-chip");
+        input.focus();
+        render();
+      });
+    });
+
+    const initialQuery = new URLSearchParams(window.location.search).get("q");
+    if (initialQuery && input) input.value = initialQuery;
+    render();
+  }
+
+  /* ------------------------------------ Reading progress (post.html) ------------- */
+  const progressBar = document.querySelector("[data-reading-progress]");
+  if (progressBar) {
+    const article = document.querySelector(".post-body");
+    const updateProgress = () => {
+      if (!article) return;
+      const rect = article.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const scrolled = -rect.top;
+      const pct = total > 0 ? Math.min(100, Math.max(0, (scrolled / total) * 100)) : 0;
+      progressBar.style.width = pct + "%";
+    };
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  }
+
+  /* ------------------------------------ FAQ accordion (post.html, faq.html) ------- */
+  document.querySelectorAll(".faq-item__q").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const item = btn.closest(".faq-item");
+      const wasOpen = item.classList.contains("is-open");
+      item.parentElement.querySelectorAll(".faq-item.is-open").forEach((el) => {
+        el.classList.remove("is-open");
+        el.querySelector(".faq-item__q").setAttribute("aria-expanded", "false");
+      });
+      if (!wasOpen) {
+        item.classList.add("is-open");
+        btn.setAttribute("aria-expanded", "true");
+      }
+    });
+  });
+
+  /* ------------------------------------ FAQ search + category nav (faq.html) ------ */
+  const faqPage = document.querySelector("[data-faq-page]");
+  if (faqPage) {
+    const faqInput = faqPage.querySelector("[data-faq-search-input]");
+    const faqItems = Array.from(faqPage.querySelectorAll("[data-faq-searchable]"));
+    const faqGroups = Array.from(faqPage.querySelectorAll("[data-faq-group]"));
+    const faqEmpty = faqPage.querySelector("[data-faq-empty]");
+    const faqCountEl = faqPage.querySelector("[data-faq-count]");
+
+    // Keep a pristine copy of each question's text so highlight marks can be removed cleanly.
+    faqItems.forEach((item) => {
+      const q = item.querySelector(".faq-item__q");
+      item.dataset.faqQuestion = q.childNodes[0].textContent.trim();
+      item.dataset.faqAnswer = item.querySelector(".faq-item__a p").textContent.trim();
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function highlight(text, query) {
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const escQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return safe.replace(new RegExp(`(${escQuery})`, "gi"), "<mark>$1</mark>");
+    }
+
+    function runFaqSearch() {
+      const query = (faqInput.value || "").trim();
+      let visibleCount = 0;
+
+      faqItems.forEach((item) => {
+        const question = item.dataset.faqQuestion;
+        const answer = item.dataset.faqAnswer;
+        const isMatch = !query || `${question} ${answer}`.toLowerCase().includes(query.toLowerCase());
+        item.hidden = !isMatch;
+        if (isMatch) {
+          visibleCount++;
+          const qEl = item.querySelector(".faq-item__q");
+          qEl.childNodes[0].textContent = "";
+          qEl.insertAdjacentHTML("afterbegin", highlight(question, query));
+          item.querySelector(".faq-item__a p").innerHTML = highlight(answer, query);
+        }
+      });
+
+      faqGroups.forEach((group) => {
+        const anyVisible = Array.from(group.querySelectorAll("[data-faq-searchable]")).some((i) => !i.hidden);
+        group.hidden = !anyVisible;
+      });
+
+      if (faqCountEl) {
+        faqCountEl.textContent = query ? `${visibleCount.toLocaleString("fa-IR")} سوال یافت شد برای «${query}»` : "";
+      }
+      if (faqEmpty) faqEmpty.hidden = visibleCount > 0;
+    }
+
+    let faqDebounce;
+    faqInput?.addEventListener("input", () => {
+      clearTimeout(faqDebounce);
+      faqDebounce = setTimeout(runFaqSearch, 200);
+    });
+    faqPage.querySelectorAll("[data-faq-search-form]").forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        runFaqSearch();
+      });
+    });
+
+    const faqCatLinks = Array.from(faqPage.querySelectorAll("[data-faq-cat]"));
+    if ("IntersectionObserver" in window && faqCatLinks.length) {
+      const faqIo = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const id = entry.target.getAttribute("id");
+            faqCatLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+          });
+        },
+        { rootMargin: "-15% 0px -70% 0px" }
+      );
+      faqGroups.forEach((g) => faqIo.observe(g));
+    }
+  }
+
+  /* ------------------------------------ TOC active-section tracking (post.html) -- */
+  const tocLinks = document.querySelectorAll("[data-toc] a");
+  if ("IntersectionObserver" in window && tocLinks.length) {
+    const headings = Array.from(tocLinks)
+      .map((a) => document.querySelector(a.getAttribute("href")))
+      .filter(Boolean);
+    const tocIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const id = entry.target.getAttribute("id");
+          tocLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+        });
+      },
+      { rootMargin: "-20% 0px -70% 0px" }
+    );
+    headings.forEach((h) => tocIo.observe(h));
+  }
+
+  /* ------------------------------------ Pagination (category.html grid) ---------- */
+  const paginationEls = document.querySelectorAll("[data-pagination]");
+  paginationEls.forEach((pagination) => {
+    const gridSel = pagination.getAttribute("data-pagination");
+    const grid = document.querySelector(gridSel);
+    if (!grid) return;
+    const pageButtons = Array.from(pagination.querySelectorAll("[data-page]"));
+    const prevBtn = pagination.querySelector("[data-page-prev]");
+    const nextBtn = pagination.querySelector("[data-page-next]");
+    const totalPages = pageButtons.length;
+
+    function showPage(page) {
+      grid.querySelectorAll("[data-item-page]").forEach((item) => {
+        item.style.display = Number(item.getAttribute("data-item-page")) === page ? "" : "none";
+      });
+      pageButtons.forEach((b) => b.classList.toggle("is-active", Number(b.getAttribute("data-page")) === page));
+      if (prevBtn) prevBtn.disabled = page <= 1;
+      if (nextBtn) nextBtn.disabled = page >= totalPages;
+      pagination.dataset.current = String(page);
+    }
+
+    pageButtons.forEach((b) => {
+      b.addEventListener("click", () => {
+        showPage(Number(b.getAttribute("data-page")));
+        grid.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      });
+    });
+    prevBtn?.addEventListener("click", () => showPage(Math.max(1, Number(pagination.dataset.current || 1) - 1)));
+    nextBtn?.addEventListener("click", () => showPage(Math.min(totalPages, Number(pagination.dataset.current || 1) + 1)));
+
+    showPage(1);
+  });
+
+  /* ------------------------------------ Footer year (Persian calendar) ----------- */
+  const yearEl = document.querySelector("[data-year]");
+  if (yearEl) {
+    try {
+      yearEl.textContent = new Intl.DateTimeFormat("fa-IR-u-ca-persian", { year: "numeric" }).format(new Date());
+    } catch (e) {
+      yearEl.textContent = new Date().getFullYear().toString();
+    }
+  }
+
+  /* Close mobile drawer automatically when a nav link is clicked */
+  document.querySelectorAll(".mobile-nav-list a[href^='#']").forEach((a) => {
+    a.addEventListener("click", closeDrawer);
+  });
+})();

@@ -1,0 +1,20 @@
+/*
+Theme Name: قالب اختصاصی ماشین‌های بادی پارس
+Theme URI: https://pars-bm.com
+Author: یاشار عمرانی
+Author URI: https://pars-bm.com
+Description: قالب اختصاصی و کاملاً واکنش‌گرای وردپرس برای پارس بلومولدینگ (Pars Blow Molding Technology)؛ سازنده دستگاه‌های اکستروژن بادی، تزریق پلاستیک، تزریق بادی و بادکن PET. این قالب شامل اسلایدر هیرو مدیریت‌پذیر، آرشیو دسته‌بندی محصولات با صفحه‌بندی واقعی وردپرس، مقالات تک‌صفحه با فهرست مطالب خودکار، سوالات متداول دسته‌بندی‌شده با جستجوی زنده، جستجوی سراسری سایت و صفحه ۴۰۴ اختصاصی است. راست‌چین (RTL)، فونت وزیرمتن، حالت روشن/تاریک و نوار پایین موبایل به‌صورت کامل پیاده‌سازی شده‌اند.
+Version: 1.0
+Requires at least: 6.0
+Requires PHP: 7.4
+Tested up to: 6.6
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: parsbm
+Tags: custom-menu, custom-logo, featured-images, translation-ready, right-to-left, industrial, one-page
+*/
+
+/* استایل اصلی این قالب در assets/css/style.css قرار دارد و از طریق functions.php
+   با wp_enqueue_style بارگذاری می‌شود. این فایل فقط برای شناسایی قالب توسط
+   وردپرس (Appearance > Themes) استفاده می‌شود و عمداً خالی نگه داشته شده تا
+   مسیرهای فونت و تصاویر داخل assets/css/style.css بدون تغییر کار کنند. */
