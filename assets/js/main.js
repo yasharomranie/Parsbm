@@ -338,7 +338,7 @@
     updateProgress();
   }
 
-  /* ------------------------------------ FAQ accordion (post.html) ---------------- */
+  /* ------------------------------------ FAQ accordion (post.html, faq.html) ------- */
   document.querySelectorAll(".faq-item__q").forEach((btn) => {
     btn.addEventListener("click", () => {
       const item = btn.closest(".faq-item");
@@ -353,6 +353,89 @@
       }
     });
   });
+
+  /* ------------------------------------ FAQ search + category nav (faq.html) ------ */
+  const faqPage = document.querySelector("[data-faq-page]");
+  if (faqPage) {
+    const faqInput = faqPage.querySelector("[data-faq-search-input]");
+    const faqItems = Array.from(faqPage.querySelectorAll("[data-faq-searchable]"));
+    const faqGroups = Array.from(faqPage.querySelectorAll("[data-faq-group]"));
+    const faqEmpty = faqPage.querySelector("[data-faq-empty]");
+    const faqCountEl = faqPage.querySelector("[data-faq-count]");
+
+    // Keep a pristine copy of each question's text so highlight marks can be removed cleanly.
+    faqItems.forEach((item) => {
+      const q = item.querySelector(".faq-item__q");
+      item.dataset.faqQuestion = q.childNodes[0].textContent.trim();
+      item.dataset.faqAnswer = item.querySelector(".faq-item__a p").textContent.trim();
+    });
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function highlight(text, query) {
+      const safe = escapeHtml(text);
+      if (!query) return safe;
+      const escQuery = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return safe.replace(new RegExp(`(${escQuery})`, "gi"), "<mark>$1</mark>");
+    }
+
+    function runFaqSearch() {
+      const query = (faqInput.value || "").trim();
+      let visibleCount = 0;
+
+      faqItems.forEach((item) => {
+        const question = item.dataset.faqQuestion;
+        const answer = item.dataset.faqAnswer;
+        const isMatch = !query || `${question} ${answer}`.toLowerCase().includes(query.toLowerCase());
+        item.hidden = !isMatch;
+        if (isMatch) {
+          visibleCount++;
+          const qEl = item.querySelector(".faq-item__q");
+          qEl.childNodes[0].textContent = "";
+          qEl.insertAdjacentHTML("afterbegin", highlight(question, query));
+          item.querySelector(".faq-item__a p").innerHTML = highlight(answer, query);
+        }
+      });
+
+      faqGroups.forEach((group) => {
+        const anyVisible = Array.from(group.querySelectorAll("[data-faq-searchable]")).some((i) => !i.hidden);
+        group.hidden = !anyVisible;
+      });
+
+      if (faqCountEl) {
+        faqCountEl.textContent = query ? `${visibleCount.toLocaleString("fa-IR")} سوال یافت شد برای «${query}»` : "";
+      }
+      if (faqEmpty) faqEmpty.hidden = visibleCount > 0;
+    }
+
+    let faqDebounce;
+    faqInput?.addEventListener("input", () => {
+      clearTimeout(faqDebounce);
+      faqDebounce = setTimeout(runFaqSearch, 200);
+    });
+    faqPage.querySelectorAll("[data-faq-search-form]").forEach((form) => {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        runFaqSearch();
+      });
+    });
+
+    const faqCatLinks = Array.from(faqPage.querySelectorAll("[data-faq-cat]"));
+    if ("IntersectionObserver" in window && faqCatLinks.length) {
+      const faqIo = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const id = entry.target.getAttribute("id");
+            faqCatLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`));
+          });
+        },
+        { rootMargin: "-15% 0px -70% 0px" }
+      );
+      faqGroups.forEach((g) => faqIo.observe(g));
+    }
+  }
 
   /* ------------------------------------ TOC active-section tracking (post.html) -- */
   const tocLinks = document.querySelectorAll("[data-toc] a");
