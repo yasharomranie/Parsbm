@@ -167,20 +167,7 @@ $slides = new WP_Query( array(
       <?php endif; ?>
     </div>
 
-    <?php if ( $machines_q->max_num_pages > 1 ) : ?>
-    <nav class="pagination" aria-label="صفحه‌بندی محصولات">
-      <?php
-      $total = (int) $machines_q->max_num_pages;
-      $prev_disabled = $paged <= 1;
-      $next_disabled = $paged >= $total;
-      ?>
-      <a<?php echo $prev_disabled ? ' aria-disabled="true"' : ''; ?> style="transform:scaleX(-1)" href="<?php echo esc_url( $prev_disabled ? '#' : get_pagenum_link( $paged - 1 ) ); ?>" aria-label="صفحه قبل"><svg><use href="#i-arrow-fwd"/></svg></a>
-      <?php for ( $p = 1; $p <= $total; $p++ ) : ?>
-        <a class="<?php echo ( $p === $paged ) ? 'is-active' : ''; ?>" href="<?php echo esc_url( get_pagenum_link( $p ) ); ?>"><?php echo esc_html( parsbm_fa_number( $p ) ); ?></a>
-      <?php endfor; ?>
-      <a<?php echo $next_disabled ? ' aria-disabled="true"' : ''; ?> href="<?php echo esc_url( $next_disabled ? '#' : get_pagenum_link( $paged + 1 ) ); ?>" aria-label="صفحه بعد"><svg><use href="#i-arrow-fwd"/></svg></a>
-    </nav>
-    <?php endif; wp_reset_postdata(); ?>
+    <?php parsbm_render_pagination( $machines_q, $paged ); wp_reset_postdata(); ?>
   </div>
 </section>
 

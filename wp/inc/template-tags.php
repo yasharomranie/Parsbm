@@ -171,6 +171,24 @@ function parsbm_fa_number( $n ) {
 	return str_replace( $fa, $en, (string) $n );
 }
 
+/**
+ * صفحه‌بندی واقعی وردپرس با مارک‌آپ یکسان با نسخه استاتیک (.pagination a...).
+ * $query: نتیجه WP_Query که پیمایش شده. $paged: شماره صفحه فعلی.
+ */
+function parsbm_render_pagination( $query, $paged ) {
+	$total = (int) $query->max_num_pages;
+	if ( $total <= 1 ) return;
+	$prev_disabled = $paged <= 1;
+	$next_disabled = $paged >= $total;
+	echo '<nav class="pagination" aria-label="صفحه‌بندی">';
+	echo '<a' . ( $prev_disabled ? ' aria-disabled="true"' : '' ) . ' style="transform:scaleX(-1)" href="' . esc_url( $prev_disabled ? '#' : get_pagenum_link( $paged - 1 ) ) . '" aria-label="صفحه قبل"><svg><use href="#i-arrow-fwd"/></svg></a>';
+	for ( $p = 1; $p <= $total; $p++ ) {
+		echo '<a class="' . ( $p === $paged ? 'is-active' : '' ) . '" href="' . esc_url( get_pagenum_link( $p ) ) . '">' . esc_html( parsbm_fa_number( $p ) ) . '</a>';
+	}
+	echo '<a' . ( $next_disabled ? ' aria-disabled="true"' : '' ) . ' href="' . esc_url( $next_disabled ? '#' : get_pagenum_link( $paged + 1 ) ) . '" aria-label="صفحه بعد"><svg><use href="#i-arrow-fwd"/></svg></a>';
+	echo '</nav>';
+}
+
 /** کوئری مقالات مرتبط (سایر نوشته‌های استاندارد وردپرس، به‌جز نوشته جاری). */
 function parsbm_related_articles( $post_id, $count = 4 ) {
 	return new WP_Query( array(
