@@ -101,9 +101,4 @@ function parsbm_customize_register( $wp_customize ) {
 }
 add_action( 'customize_register', 'parsbm_customize_register' );
 
-/**
- * میان‌بر کوتاه برای خواندن تنظیمات بالا در قالب‌ها: parsbm_opt( 'contact_phone' )
- */
-function parsbm_opt( $key ) {
-	return get_theme_mod( 'parsbm_' . $key, '' );
-}
+// میان‌بر parsbm_opt() برای خواندن این تنظیمات در قالب‌ها، در inc/template-tags.php تعریف شده است.
